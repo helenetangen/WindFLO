@@ -34,37 +34,15 @@ public class GeneticAlgorithm {
 	
 	
 	public void run(){
-		double interval = MINIMUM_DISTANCE * evaluator.getTurbineRadius();
-	
+
 		//Set up the grid
-		for (double x = 0.0; x < evaluator.getFarmWidth(); x += interval){
-			for (double y = 0.0; y < evaluator.getFarmHeight(); y += interval){
-				boolean validPosition = true;
-				for (int o = 0; o < evaluator.getObstacles().length; o++){
-					double[] obstacle = evaluator.getObstacles()[o];
-					if (x > obstacle[0] && y > obstacle[1] && x < obstacle[2] && y < obstacle[3]){
-						validPosition = false;
-					}
-				}
-				if (validPosition){
-					double[] point = {x, y};
-					grid.add(point);
-				}
-			}
-		}
+		this.setUpGrid();
 		
 		//Initialize individuals
-		individuals = new boolean[populationSize][grid.size()];
-		fitness     = new double[populationSize];
-		
-		for (int p = 0; p < populationSize; p++){
-			for (int i = 0; i < grid.size(); i++){
-				individuals[p][i] = random.nextBoolean();
-			}
-		}
+		this.generatePopulation();
 		
 		//Evaluate initial population
-		evaluate();
+		this.evaluate();
 		
 		//Genetic Algorithm
 		for (int i = 0; i < generations; i++){
@@ -180,5 +158,37 @@ public class GeneticAlgorithm {
 		System.out.println(minimumFitness);
 	}
 	
+	
+	public void setUpGrid(){
+		double interval = MINIMUM_DISTANCE * evaluator.getTurbineRadius();
+		for (double x = 0.0; x < evaluator.getFarmWidth(); x += interval){
+			for (double y = 0.0; y < evaluator.getFarmHeight(); y += interval){
+				boolean validPosition = true;
+				for (int o = 0; o < evaluator.getObstacles().length; o++){
+					double[] obstacle = evaluator.getObstacles()[o];
+					if (x > obstacle[0] && y > obstacle[1] && x < obstacle[2] && y < obstacle[3]){
+						validPosition = false;
+					}
+				}
+				if (validPosition){
+					double[] point = {x, y};
+					grid.add(point);
+				}
+			}
+		}
+	}
+	
+	
+	public void generatePopulation(){
+		individuals = new boolean[populationSize][grid.size()];
+		fitness     = new double[populationSize];
+		
+		for (int p = 0; p < populationSize; p++){
+			for (int i = 0; i < grid.size(); i++){
+				individuals[p][i] = random.nextBoolean();
+			}
+		}
+	}
+
 	
 }
