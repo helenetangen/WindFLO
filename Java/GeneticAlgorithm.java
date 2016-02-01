@@ -48,71 +48,20 @@ public class GeneticAlgorithm {
 		for (int i = 0; i < generations; i++){
 			
 			//Tournament selection
-			int[] winners     = new int[populationSize/tournamentSize];
-			int[] competitors = new int[populationSize];
-			for (int c = 0; c < competitors.length; c++){
-				competitors[c] = c;
-			}
-			for (int c = 0; c < competitors.length; c++){
-				int index     = random.nextInt(c + 1);
-				int temporary = competitors[index];
-				competitors[index] = competitors[c];
-				competitors[c] = temporary;
-			}
-			for (int t = 0; t < winners.length; t++){
-				int winner = -1;
-				double winnerFitness = Double.MAX_VALUE;
-				for (int c = 0; c < tournamentSize; c++){
-					int competitor = competitors[tournamentSize * t + c];
-					if (fitness[competitor] < winnerFitness){
-						winner = competitor;
-						winnerFitness = fitness[winner];
-					}
-				}
-				winners[t] = winner;
-			}
+			int[] winners = this.tournamentSelection();
 			
 			//Crossover
-			boolean[][] children = new boolean[populationSize][grid.size()];
-			for (int c = 0; c < (populationSize - winners.length); c++){
-				int positionOne = random.nextInt(winners.length);
-				int positionTwo = random.nextInt(winners.length - 1);
-				if (positionTwo >= positionOne){
-					positionTwo++;
-				}
-				int pOne = winners[positionOne];
-				int pTwo = winners[positionTwo];
-				boolean[] parentOne = individuals[pOne];
-				boolean[] parentTwo = individuals[pTwo];
-				boolean[] child = new boolean[grid.size()];
-				for (int j = 0; j < child.length; j++){
-					if (random.nextDouble() < crossoverRate){
-						child[j] = parentTwo[j];
-					}
-					else{
-						child[j] = parentOne[j];
-					}
-				}
-				children[c] = child;
-			}
+			boolean[][] children = this.crossover(winners);
 			
 			//Mutation
-			for (int c = 0; c < (populationSize - winners.length); c++){
-				for (int j = 0; j < children[c].length; j++){
-					if (random.nextDouble() < mutationRate){
-						children[c][j] = !children[c][j];
-					}
-				}
-			}
+			children = this.mutation(children, winners);
 			
 			//Elitism
-			for (int c = 0; c < winners.length; c++){
-				children[populationSize - winners.length + c] = individuals[winners[c]];
-			}
+			children = this.elitism(children, winners);
 			
 			individuals = children;
 			
-			//Evaluate
+			//Evaluate new population
 			evaluate();
 		}
 	}
@@ -156,6 +105,81 @@ public class GeneticAlgorithm {
 			
 		}
 		System.out.println(minimumFitness);
+	}
+	
+	
+	public boolean[][] elitism(boolean[][] children, int[] winners){
+		for (int c = 0; c < winners.length; c++){
+			children[populationSize - winners.length + c] = individuals[winners[c]];
+		}
+		return children;
+	}
+	
+	
+	public boolean[][] mutation(boolean[][] children, int[] winners){
+		for (int c = 0; c < (populationSize - winners.length); c++){
+			for (int j = 0; j < children[c].length; j++){
+				if (random.nextDouble() < mutationRate){
+					children[c][j] = !children[c][j];
+				}
+			}
+		}
+		return children;
+	}
+	
+	
+	public boolean[][] crossover(int[] winners){
+		boolean[][] children = new boolean[populationSize][grid.size()];
+		for (int c = 0; c < (populationSize - winners.length); c++){
+			int positionOne = random.nextInt(winners.length);
+			int positionTwo = random.nextInt(winners.length - 1);
+			if (positionTwo >= positionOne){
+				positionTwo++;
+			}
+			int pOne = winners[positionOne];
+			int pTwo = winners[positionTwo];
+			boolean[] parentOne = individuals[pOne];
+			boolean[] parentTwo = individuals[pTwo];
+			boolean[] child = new boolean[grid.size()];
+			for (int j = 0; j < child.length; j++){
+				if (random.nextDouble() < crossoverRate){
+					child[j] = parentTwo[j];
+				}
+				else{
+					child[j] = parentOne[j];
+				}
+			}
+			children[c] = child;
+		}
+		return children;
+	}
+	
+	
+	public int[] tournamentSelection(){
+		int[] winners     = new int[populationSize/tournamentSize];
+		int[] competitors = new int[populationSize];
+		for (int c = 0; c < competitors.length; c++){
+			competitors[c] = c;
+		}
+		for (int c = 0; c < competitors.length; c++){
+			int index     = random.nextInt(c + 1);
+			int temporary = competitors[index];
+			competitors[index] = competitors[c];
+			competitors[c] = temporary;
+		}
+		for (int t = 0; t < winners.length; t++){
+			int winner = -1;
+			double winnerFitness = Double.MAX_VALUE;
+			for (int c = 0; c < tournamentSize; c++){
+				int competitor = competitors[tournamentSize * t + c];
+				if (fitness[competitor] < winnerFitness){
+					winner = competitor;
+					winnerFitness = fitness[winner];
+				}
+			}
+			winners[t] = winner;
+		}
+		return winners;
 	}
 	
 	
