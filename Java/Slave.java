@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 
-public class Slave implements Callable{
+public class Slave implements Callable<double[]>{
 
 	
 	private ArrayList<double[][]> layouts;
@@ -19,8 +19,9 @@ public class Slave implements Callable{
 	}
 
 
-	public Object call() throws Exception {
+	public double[] call() throws Exception {
 		double[] fitness = new double[layouts.size()];
+		double minimumFitness = Double.MAX_VALUE;
 		
 		for (int i = start; i < end; i++){
 			double energyCost;
@@ -31,17 +32,14 @@ public class Slave implements Callable{
 			else{
 				energyCost = Double.MAX_VALUE;
 			}
-			fitness[p] = energyCost;
+			fitness[i] = energyCost;
+			
+			//Just for visualization
+			
+			if (fitness[i] < minimumFitness){
+				minimumFitness = fitness[i];
+			}
 		}
-		
-		
-		//Just for visualization
-		double minimumFitness = Double.MAX_VALUE;
-		if (fitness[p] < minimumFitness){
-			minimumFitness = fitness[p];
-		}
-		
-		
 		System.out.println(minimumFitness);
 		
 		return fitness;

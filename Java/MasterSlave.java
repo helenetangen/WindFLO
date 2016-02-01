@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 
 public class MasterSlave extends GeneticAlgorithm{
@@ -30,9 +31,12 @@ public class MasterSlave extends GeneticAlgorithm{
 				}
 			}
 			layouts.add(layout);
-			
 		}
 		
+		Callable slaveOne = new Slave(evaluator, layouts, fitness, 0, 5);
+		Callable slaveTwo = new Slave(evaluator, layouts, fitness, 5, 10);
+		Thread threadOne = new Thread((Runnable) slaveOne);
+		Thread threadTwo = new Thread((Runnable) slaveTwo);
 	}
 	
 	
