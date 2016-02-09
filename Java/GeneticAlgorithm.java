@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class GeneticAlgorithm {
+public class GeneticAlgorithm{
 
 	
 	// Genetic Algorithm Variables
@@ -29,7 +29,7 @@ public class GeneticAlgorithm {
 		this.generations    = generations;
 		this.mutationRate   = mutationRate;
 		this.crossoverRate  = crossoverRate;
-		this.grid = new ArrayList<double[]>();
+		this.grid = new ArrayList<double[]>();		
 	}
 	
 	
@@ -104,7 +104,7 @@ public class GeneticAlgorithm {
 			}
 			
 		}
-		System.out.println(minimumFitness);
+		System.out.println("Minimum fitness: " + minimumFitness);
 	}
 	
 	
@@ -156,7 +156,7 @@ public class GeneticAlgorithm {
 	
 	
 	public int[] tournamentSelection(){
-		int[] winners     = new int[populationSize/tournamentSize];
+		int[] winners     = new int[(int) populationSize/tournamentSize];
 		int[] competitors = new int[populationSize];
 		for (int c = 0; c < competitors.length; c++){
 			competitors[c] = c;

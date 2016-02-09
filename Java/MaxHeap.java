@@ -1,101 +1,78 @@
 public class MaxHeap extends Heap{
-	
-	
-	public static void main(String[] args){
-		//Full size heap
-		int[] table1 = {16, 4, 10, 14, 7, 9, 3, 2, 8, 1};
-		MaxHeap heap = new MaxHeap(table1);
-//		heap.printHeap();
-//		System.out.println("Max: " + heap.extractMaximum());
-//		heap.printHeap();
-//		
-//		//Empty heap
-//		int[] table2 = {};
-//		heap = new MaxHeap(table2);
-//		heap.printHeap();
-//		
-//		//One-element heap
-//		int[] table3 = {1};
-//		heap = new MaxHeap(table3);
-//		heap.printHeap();
-//		
-//		//Two-element heap
-//		int[] table4 = {1, 7};
-//		heap = new MaxHeap(table4);
-//		heap.printHeap();
-//		
-		//Three-element heap
-		int[] table5 = {7, 1, 4};
-		heap = new MaxHeap(table5);
-		heap.printHeap();
-		heap.insertElement(5);
-		heap.printHeap();
-		heap.insertElement(6);
-		heap.printHeap();
-		heap.insertElement(18);
-		heap.printHeap();
-		heap.insertElement(3);
-		heap.printHeap();
-//		
-//		//Three-element heap
-//		int[] table6 = {14, 8, 9, 2, 1, 4, 3, 7, 10, 16};
-//		heap = new MaxHeap(table6);
-//		heap.printHeap();
-	}
 		
 	
-	public MaxHeap(int[] table){
-		heap = table;
+	public MaxHeap(){
+		heap = new double[0];
+		indices = new int[0];
 		this.buildMaxHeap();
 	}
 	
 	
-	public void insertElement(int key){
-		int[] newHeap = new int[heap.length + 1];
-		for(int i = 0; i < heap.length; i++){
-			newHeap[i] = heap[i];
-		}
-		newHeap[heap.length] = Integer.MIN_VALUE;
-		heap = newHeap;
-		this.increaseKey(key, heap.length - 1);
+	public MaxHeap(double[] heap, int[] indices){
+		this.heap = heap;
+		this.indices = indices;
+		this.buildMaxHeap();
 	}
 	
 	
-	public void increaseKey(int key, int index){
-		if (key < heap[index]){
+	public void insertElement(double key, int index){
+		double[] newHeap = new double[heap.length + 1];
+		int[] newIndices = new int[heap.length + 1];
+		for(int i = 0; i < heap.length; i++){
+			newHeap[i] = heap[i];
+			newIndices[i] = indices[i];
+		}
+		newHeap[heap.length]    = Integer.MIN_VALUE;
+		newIndices[heap.length] = Integer.MIN_VALUE;
+		heap    = newHeap;
+		indices = newIndices;
+		this.increaseKey(key, index, heap.length - 1);
+	}
+	
+	
+	public void increaseKey(double key, int index, int position){
+		if (key < heap[position]){
 			System.out.println("New key is smaller than current key.");
 		}
-		heap[index] = key;
-		while (index > 0 && heap[this.parent(index)] < heap[index]){
-			int temporary = heap[index];
-			heap[index] = heap[this.parent(index)];
-			heap[this.parent(index)] = temporary;
-			index = this.parent(index);
+		heap[position] = key;
+		while (position > 0 && heap[this.parent(position)] < heap[position]){
+			double temporary = heap[position];
+			heap[position] = heap[this.parent(position)];
+			heap[this.parent(position)] = temporary;
+			position = this.parent(position);
+			
+			temporary = indices[position];
+			indices[position] = indices[this.parent(position)];
+			indices[this.parent(position)] = (int) temporary;
 		}
 	}
 	
 
-	public int extractMaximum(){
+	public double extractMaximum(){
 		if (heap.length < 1){
 			System.out.println("No elements in heap to extract");
 			return -1;
 		}
-		int max = heap[0];
+		double max = heap[0];
 
-		int[] newHeap = new int[heap.length - 1];
+		double[] newHeap = new double[heap.length - 1];
+		int[] newIndices = new int[heap.length - 1];
 		if (heap.length > 1){
 			newHeap[0] = heap[heap.length - 1];
+			newIndices[0] = indices[heap.length - 1];
 		}
 		for (int i = 1; i < (heap.length - 1); i++){
 			newHeap[i] = heap[i];
+			newIndices[i] = indices[i];
 		}
 		heap = newHeap;
+		indices = newIndices;
 		this.maxHeapify(0);
 		return max;
 	}
 	
 	
-	public int getMaximum(){
+	public double getMaximum(){
 		return heap[0];
 	}
 	
@@ -123,9 +100,14 @@ public class MaxHeap extends Heap{
 			largest = right;
 		}
 		if (largest != index){
-			int temporary = heap[index];
+			double temporary = heap[index];
 			heap[index] = heap[largest];
 			heap[largest] = temporary; 
+			
+			temporary = indices[index];
+			indices[index] = indices[largest];
+			indices[largest] = (int) temporary; 
+			
 			maxHeapify(largest);
 		}
 	}

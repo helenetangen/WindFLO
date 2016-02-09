@@ -1,46 +1,20 @@
 public class MinHeap extends Heap{
 	
 	
-	public static void main(String[] args){
-		//Three-element heap
-		int[] table = {7, 0, 18, -3};
-		MinHeap heap = new MinHeap(table);
-		heap.printHeap();
-		heap.extractMinimum();
-		heap.printHeap();
-		heap.extractMinimum();
-		heap.printHeap();
-		heap.extractMinimum();
-		heap.printHeap();
-		heap.extractMinimum();
-		heap.printHeap();
-		heap.extractMinimum();
-		heap.printHeap();
-		heap.extractMinimum();
-		heap.printHeap();
-		heap.insertElement(5);
-		heap.printHeap();
-		heap.insertElement(6);
-		heap.printHeap();
-		heap.insertElement(18);
-		heap.printHeap();
-		heap.insertElement(3);
-		heap.printHeap();
-		heap.insertElement(-3);
-		heap.printHeap();
-		heap.insertElement(100);
-		heap.printHeap();
+	public MinHeap(){
+		heap = new double[0];
+		this.buildMinHeap();
 	}
 	
 	
-	public MinHeap(int[] table){
+	public MinHeap(double[] table){
 		heap = table;
 		this.buildMinHeap();
 	}
 	
 	
 	public void insertElement(int key){
-		int[] newHeap = new int[heap.length + 1];
+		double[] newHeap = new double[heap.length + 1];
 		for(int i = 0; i < heap.length; i++){
 			newHeap[i] = heap[i];
 		}
@@ -56,7 +30,7 @@ public class MinHeap extends Heap{
 		}
 		heap[index] = key;
 		while (index > 0 && heap[this.parent(index)] > heap[index]){
-			int temporary = heap[index];
+			double temporary = heap[index];
 			heap[index] = heap[this.parent(index)];
 			heap[this.parent(index)] = temporary;
 			index = this.parent(index);
@@ -64,14 +38,14 @@ public class MinHeap extends Heap{
 	}
 	
 	
-	public int extractMinimum(){
+	public double extractMinimum(){
 		if (heap.length < 1){
 			System.out.println("No elements in heap to extract");
 			return -1;
 		}
-		int minimum = heap[0];
+		double minimum = heap[0];
 
-		int[] newHeap = new int[heap.length - 1];
+		double[] newHeap = new double[heap.length - 1];
 		if (heap.length > 1){
 			newHeap[0] = heap[heap.length - 1];
 		}
@@ -84,7 +58,7 @@ public class MinHeap extends Heap{
 	}
 	
 	
-	public int getMinimum(){
+	public double getMinimum(){
 		return heap[0];
 	}
 	
@@ -112,7 +86,7 @@ public class MinHeap extends Heap{
 			smallest = right;
 		}
 		if (smallest != index){
-			int temporary = heap[index];
+			double temporary = heap[index];
 			heap[index] = heap[smallest];
 			heap[smallest] = temporary; 
 			this.minHeapify(smallest);

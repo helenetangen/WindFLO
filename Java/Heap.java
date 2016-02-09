@@ -1,7 +1,8 @@
 public class Heap {
 
 	
-	protected int[] heap;
+	protected double[] heap;
+	protected int[] indices;
 	
 	
 	public int parent(int index){
@@ -16,6 +17,11 @@ public class Heap {
 	
 	public int right(int index){
 		return (2 * (index + 1));
+	}
+	
+	
+	public int size(){
+		return heap.length;
 	}
 	
 	
