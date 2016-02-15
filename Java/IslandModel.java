@@ -18,9 +18,11 @@ public class IslandModel extends GeneticAlgorithm{
 		this.migrationInterval = migrationInterval;
 		this.migrationRate     = migrationRate;
 		
+		System.out.println("Start making demes.");
 		demes = new GeneticAlgorithm[demeCount];
 		for (int i = 0; i < demeCount; i++){
 			demes[i] = new GeneticAlgorithm(evaluator, demeSize, tournamentSize, migrationInterval, mutationRate, crossoverRate);
+			demes[i].initialize();
 		}
 	}
 	
@@ -33,30 +35,65 @@ public class IslandModel extends GeneticAlgorithm{
 				demes[j].run();
 			}
 			this.migration();
+			
+			for (int k = 0; k < demes.length; k++){
+				GeneticAlgorithm deme = demes[k];
+				System.out.println("Deme: " + k);
+				for (int j = 0; j < deme.individuals.length; j++){
+					System.out.println("Fitness " + j + ": " + deme.fitness[j]);
+				}
+			}
 		}
 	}
 	
 	
-	//Use min- and maxheaps to find immigrates.
 	public void migration(){
+		MaxHeap[] winnersHeaps = new MaxHeap[demes.length];
+		MinHeap[] losersHeaps  = new MinHeap[demes.length];
 		
-		MaxHeap maxHeap = new MaxHeap();
-
-		
+		//Find winners and losers in each deme (migrants)
 		for (int i = 0; i < demes.length; i++){
-			GeneticAlgorithm deme = demes[i];
-			for (int j = 0; j < deme.individuals.length; j++){
-				double fitness = deme.fitness[j];
-				if (maxHeap.size() < migrationRate){
-					maxHeap.insertElement(fitness, j);
+			MaxHeap winners = new MaxHeap();
+			MinHeap losers  = new MinHeap();
+			GeneticAlgorithm demeWinners = demes[i];
+			GeneticAlgorithm demeLosers  = demes[(i + 1) % demes.length];
+			
+			for (int j = 0; j < demeWinners.populationSize; j++){
+				double fitnessWinner = demeWinners.fitness[j];
+				double fitnessLoser  = demeLosers.fitness[j];
+				if (winners.size() < migrationRate){
+					winners.insertElement(fitnessWinner, j);
+					losers.insertElement(demeLosers.fitness[j], j);
 				}
-				else if(fitness < maxHeap.getMaximum()){
-					maxHeap.extractMaximum();
-					maxHeap.insertElement(fitness, j);
+				else{
+					if (winners.getMaximumFitness() > fitnessWinner){
+						winners.extractMaximum();
+						winners.insertElement(fitnessWinner, j);
+					}
+					if (losers.getMinimumFitness() < fitnessLoser){
+						losers.extractMinimum();
+						losers.insertElement(fitnessLoser, j);
+					}
 				}
 			}
-			System.out.println("Test: ");
+			winnersHeaps[i] = winners;
+			losersHeaps[i]  = losers;
+			
 		}
+		//Raplace winners from one deme with losers from the next (ring-topology).
+		for (int i = 0; i < demes.length; i++){
+			MaxHeap winners = winnersHeaps[i];
+			MinHeap losers  = losersHeaps[i];
+			GeneticAlgorithm demeWinners = demes[i];
+			GeneticAlgorithm demeLosers  = demes[(i + 1) % demes.length];
+			for (int j = 0; j < migrationRate; j++){
+				demeLosers.individuals[losers.getMinimumIndex()] = demeWinners.individuals[winners.getMaximumIndex()];
+				demeLosers.fitness[losers.getMinimumIndex()] = winners.getMaximumFitness();
+				winners.extractMaximum();
+				losers.extractMinimum();
+			}
+			
+		}	
 	}
 	
 	

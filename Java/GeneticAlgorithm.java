@@ -29,12 +29,11 @@ public class GeneticAlgorithm{
 		this.generations    = generations;
 		this.mutationRate   = mutationRate;
 		this.crossoverRate  = crossoverRate;
-		this.grid = new ArrayList<double[]>();		
+		this.grid = new ArrayList<double[]>();	
 	}
 	
 	
-	public void run(){
-
+	public void initialize(){
 		//Set up the grid
 		this.setUpGrid();
 		
@@ -43,6 +42,10 @@ public class GeneticAlgorithm{
 		
 		//Evaluate initial population
 		this.evaluate();
+	}
+	
+	
+	public void run(){
 		
 		//Genetic Algorithm
 		for (int i = 0; i < generations; i++){
@@ -138,6 +141,7 @@ public class GeneticAlgorithm{
 			}
 			int pOne = winners[positionOne];
 			int pTwo = winners[positionTwo];
+
 			boolean[] parentOne = individuals[pOne];
 			boolean[] parentTwo = individuals[pTwo];
 			boolean[] child = new boolean[grid.size()];

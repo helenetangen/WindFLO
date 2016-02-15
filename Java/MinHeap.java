@@ -2,95 +2,105 @@ public class MinHeap extends Heap{
 	
 	
 	public MinHeap(){
-		heap = new double[0];
-		this.buildMinHeap();
+		super();
 	}
 	
 	
-	public MinHeap(double[] table){
-		heap = table;
-		this.buildMinHeap();
-	}
-	
-	
-	public void insertElement(int key){
-		double[] newHeap = new double[heap.length + 1];
-		for(int i = 0; i < heap.length; i++){
-			newHeap[i] = heap[i];
+	public void insertElement(double key, int index){
+		//Increase heap sizes:
+		double[] newFitnessHeap = new double[fitnessHeap.length + 1];
+		int[] newIndexHeap = new int[fitnessHeap.length + 1];
+		
+		for (int i = 0; i < fitnessHeap.length; i++){
+			newFitnessHeap[i] = fitnessHeap[i];
+			newIndexHeap[i] = indexHeap[i];
 		}
-		newHeap[heap.length] = Integer.MAX_VALUE;
-		heap = newHeap;
-		this.decreaseKey(key, heap.length - 1);
+		newFitnessHeap[fitnessHeap.length] = Integer.MIN_VALUE;
+		fitnessHeap = newFitnessHeap;
+		indexHeap = newIndexHeap;
+		this.increaseKey(key, index, fitnessHeap.length - 1);
 	}
 	
 	
-	public void decreaseKey(int key, int index){
-		if (key > heap[index]){
-			System.out.println("New key is greater than current key.");
+	public void increaseKey(double key, int index, int position){
+		if (key < fitnessHeap[position]){
+			System.out.println("New key is smaller than current key.");
 		}
-		heap[index] = key;
-		while (index > 0 && heap[this.parent(index)] > heap[index]){
-			double temporary = heap[index];
-			heap[index] = heap[this.parent(index)];
-			heap[this.parent(index)] = temporary;
-			index = this.parent(index);
+		fitnessHeap[position] = key;
+		indexHeap[position]   = index;
+		while(position > 0 && fitnessHeap[this.parentIndex(position)] > fitnessHeap[position]){
+			double temporaryFitness = fitnessHeap[position];
+			fitnessHeap[position] = fitnessHeap[this.parentIndex(position)];
+			fitnessHeap[this.parentIndex(position)] = temporaryFitness;
+			
+			int temporaryIndex = indexHeap[position];
+			indexHeap[position] = indexHeap[this.parentIndex(position)];
+			indexHeap[this.parentIndex(position)] = temporaryIndex;
+			
+			position = this.parentIndex(position);
 		}
 	}
 	
 	
 	public double extractMinimum(){
-		if (heap.length < 1){
+		if (fitnessHeap.length < 1){
 			System.out.println("No elements in heap to extract");
 			return -1;
 		}
-		double minimum = heap[0];
+		double max = fitnessHeap[0];
 
-		double[] newHeap = new double[heap.length - 1];
-		if (heap.length > 1){
-			newHeap[0] = heap[heap.length - 1];
+		double[] newFitnessHeap = new double[fitnessHeap.length - 1];
+		int[] newIndexHeap = new int[fitnessHeap.length - 1];
+		
+		if (fitnessHeap.length > 1){
+			newFitnessHeap[0] = fitnessHeap[fitnessHeap.length - 1];
+			newIndexHeap[0] = indexHeap[fitnessHeap.length - 1];
 		}
-		for (int i = 1; i < (heap.length - 1); i++){
-			newHeap[i] = heap[i];
+		for (int i = 1; i < (fitnessHeap.length - 1); i++){
+			newFitnessHeap[i] = fitnessHeap[i];
+			newIndexHeap[i] = indexHeap[i];
 		}
-		heap = newHeap;
+		fitnessHeap = newFitnessHeap;
+		indexHeap = newIndexHeap;
 		this.minHeapify(0);
-		return minimum;
-	}
-	
-	
-	public double getMinimum(){
-		return heap[0];
-	}
-	
-	
-	public void buildMinHeap(){
-		int count = heap.length/2 - 1;
-		while (count >= 0){
-			this.minHeapify(count);
-			count = count - 1;
-		}
+		return max;
 	}
 	
 	
 	public void minHeapify(int index){
-		int left  = left(index);
-		int right = right(index);
+		int left  = leftIndex(index);
+		int right = rightIndex(index);
 		int smallest;
-		if (left < heap.length && heap[left] < heap[index]){
+		if (left < fitnessHeap.length && fitnessHeap[left] < fitnessHeap[index]){
 			smallest = left;
 		}
 		else{
 			smallest = index;
 		}
-		if (right < heap.length && heap[right] < heap[smallest]){
+		if (right < fitnessHeap.length && fitnessHeap[right] < fitnessHeap[smallest]){
 			smallest = right;
 		}
 		if (smallest != index){
-			double temporary = heap[index];
-			heap[index] = heap[smallest];
-			heap[smallest] = temporary; 
-			this.minHeapify(smallest);
+			double temporaryFitness = fitnessHeap[index];
+			fitnessHeap[index] = fitnessHeap[smallest];
+			fitnessHeap[smallest] = temporaryFitness; 
+			
+			int temporaryIndex = indexHeap[index];
+			indexHeap[index] = indexHeap[smallest];
+			indexHeap[smallest] = temporaryIndex; 
+			
+			minHeapify(smallest);
 		}
+	}
+	
+	
+	public double getMinimumFitness(){
+		return fitnessHeap[0];
+	}
+	
+	
+	public int getMinimumIndex(){
+		return indexHeap[0];
 	}
 
 

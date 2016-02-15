@@ -30,7 +30,7 @@ public class main {
 	  
 	  
 	  public static void main(String argv[]) {
-	      try {
+		  try {
 	          WindScenario windScenario = new WindScenario("../Scenarios/obs_00.xml");
 	          KusiakLayoutEvaluator evaluator = new KusiakLayoutEvaluator();
 	          evaluator.initialize(windScenario);

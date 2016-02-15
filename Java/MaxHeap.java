@@ -2,115 +2,105 @@ public class MaxHeap extends Heap{
 		
 	
 	public MaxHeap(){
-		heap = new double[0];
-		indices = new int[0];
-		this.buildMaxHeap();
-	}
-	
-	
-	public MaxHeap(double[] heap, int[] indices){
-		this.heap = heap;
-		this.indices = indices;
-		this.buildMaxHeap();
+		super();
 	}
 	
 	
 	public void insertElement(double key, int index){
-		double[] newHeap = new double[heap.length + 1];
-		int[] newIndices = new int[heap.length + 1];
-		for(int i = 0; i < heap.length; i++){
-			newHeap[i] = heap[i];
-			newIndices[i] = indices[i];
+		//Increase heap sizes:
+		double[] newFitnessHeap = new double[fitnessHeap.length + 1];
+		int[] newIndexHeap = new int[fitnessHeap.length + 1];
+		
+		for (int i = 0; i < fitnessHeap.length; i++){
+			newFitnessHeap[i] = fitnessHeap[i];
+			newIndexHeap[i] = indexHeap[i];
 		}
-		newHeap[heap.length]    = Integer.MIN_VALUE;
-		newIndices[heap.length] = Integer.MIN_VALUE;
-		heap    = newHeap;
-		indices = newIndices;
-		this.increaseKey(key, index, heap.length - 1);
+		newFitnessHeap[fitnessHeap.length] = Integer.MIN_VALUE;
+		fitnessHeap = newFitnessHeap;
+		indexHeap = newIndexHeap;
+		this.increaseKey(key, index, fitnessHeap.length - 1);
 	}
 	
 	
 	public void increaseKey(double key, int index, int position){
-		if (key < heap[position]){
+		if (key < fitnessHeap[position]){
 			System.out.println("New key is smaller than current key.");
 		}
-		heap[position] = key;
-		while (position > 0 && heap[this.parent(position)] < heap[position]){
-			double temporary = heap[position];
-			heap[position] = heap[this.parent(position)];
-			heap[this.parent(position)] = temporary;
-			position = this.parent(position);
+		fitnessHeap[position] = key;
+		indexHeap[position]   = index;
+		while(position > 0 && fitnessHeap[this.parentIndex(position)] < fitnessHeap[position]){
+			double temporaryFitness = fitnessHeap[position];
+			fitnessHeap[position] = fitnessHeap[this.parentIndex(position)];
+			fitnessHeap[this.parentIndex(position)] = temporaryFitness;
 			
-			temporary = indices[position];
-			indices[position] = indices[this.parent(position)];
-			indices[this.parent(position)] = (int) temporary;
+			int temporaryIndex = indexHeap[position];
+			indexHeap[position] = indexHeap[this.parentIndex(position)];
+			indexHeap[this.parentIndex(position)] = temporaryIndex;
+			
+			position = this.parentIndex(position);
 		}
 	}
 	
-
+	
 	public double extractMaximum(){
-		if (heap.length < 1){
+		if (fitnessHeap.length < 1){
 			System.out.println("No elements in heap to extract");
 			return -1;
 		}
-		double max = heap[0];
+		double max = fitnessHeap[0];
 
-		double[] newHeap = new double[heap.length - 1];
-		int[] newIndices = new int[heap.length - 1];
-		if (heap.length > 1){
-			newHeap[0] = heap[heap.length - 1];
-			newIndices[0] = indices[heap.length - 1];
+		double[] newFitnessHeap = new double[fitnessHeap.length - 1];
+		int[] newIndexHeap = new int[fitnessHeap.length - 1];
+		
+		if (fitnessHeap.length > 1){
+			newFitnessHeap[0] = fitnessHeap[fitnessHeap.length - 1];
+			newIndexHeap[0] = indexHeap[fitnessHeap.length - 1];
 		}
-		for (int i = 1; i < (heap.length - 1); i++){
-			newHeap[i] = heap[i];
-			newIndices[i] = indices[i];
+		for (int i = 1; i < (fitnessHeap.length - 1); i++){
+			newFitnessHeap[i] = fitnessHeap[i];
+			newIndexHeap[i] = indexHeap[i];
 		}
-		heap = newHeap;
-		indices = newIndices;
+		fitnessHeap = newFitnessHeap;
+		indexHeap = newIndexHeap;
 		this.maxHeapify(0);
 		return max;
 	}
 	
 	
-	public double getMaximum(){
-		return heap[0];
-	}
-	
-	
-	public void buildMaxHeap(){
-		int count = heap.length/2 - 1;
-		while (count >= 0){
-			maxHeapify(count);
-			count = count - 1;
-		}
-	}
-	
-	
 	public void maxHeapify(int index){
-		int left  = left(index);
-		int right = right(index);
-		int largest;
-		if (left < heap.length && heap[left] > heap[index]){
-			largest = left;
+		int left  = leftIndex(index);
+		int right = rightIndex(index);
+		int smallest;
+		if (left < fitnessHeap.length && fitnessHeap[left] > fitnessHeap[index]){
+			smallest = left;
 		}
 		else{
-			largest = index;
+			smallest = index;
 		}
-		if (right < heap.length && heap[right] > heap[largest]){
-			largest = right;
+		if (right < fitnessHeap.length && fitnessHeap[right] > fitnessHeap[smallest]){
+			smallest = right;
 		}
-		if (largest != index){
-			double temporary = heap[index];
-			heap[index] = heap[largest];
-			heap[largest] = temporary; 
+		if (smallest != index){
+			double temporaryFitness = fitnessHeap[index];
+			fitnessHeap[index] = fitnessHeap[smallest];
+			fitnessHeap[smallest] = temporaryFitness; 
 			
-			temporary = indices[index];
-			indices[index] = indices[largest];
-			indices[largest] = (int) temporary; 
+			int temporaryIndex = indexHeap[index];
+			indexHeap[index] = indexHeap[smallest];
+			indexHeap[smallest] = temporaryIndex; 
 			
-			maxHeapify(largest);
+			maxHeapify(smallest);
 		}
 	}
 	
+	
+	public double getMaximumFitness(){
+		return fitnessHeap[0];
+	}
+	
+	
+	public int getMaximumIndex(){
+		return indexHeap[0];
+	}
 
 }
